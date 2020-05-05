@@ -3,12 +3,10 @@ package com.example.halconfly
 import android.media.CamcorderProfile
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.widget.Toast
-import com.google.ar.core.Anchor
-import com.google.ar.core.AugmentedImage
-import com.google.ar.core.Frame
-import com.google.ar.core.TrackingState
+import com.google.ar.core.*
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Quaternion
@@ -16,6 +14,7 @@ import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,8 +26,10 @@ class MainActivity : AppCompatActivity() {
         /* R.raw.star_destroyer,
          R.raw.tie_silencer,
          R.raw.xwing*/
-         R.raw.beedrill
-       //R.raw.my_image_database
+        R.raw.beedrill
+      //   R.raw.my_image_database
+
+
     )
 
 
@@ -52,15 +53,19 @@ class MainActivity : AppCompatActivity() {
              updateNodes()
          }
 
-         photoSaver = PhotoSaver(this)
-         videoRecorder = VideoRecorder(this).apply {
-             sceneView = arFragment.arSceneView
-             setVideoQuality(CamcorderProfile.QUALITY_1080P, resources.configuration.orientation)
-         }
+
          setupFab()
+
     }
 
+
+
     private fun setupFab() {
+        photoSaver = PhotoSaver(this)
+        videoRecorder = VideoRecorder(this).apply {
+            sceneView = arFragment.arSceneView
+            setVideoQuality(CamcorderProfile.QUALITY_1080P, resources.configuration.orientation)
+        }
         fab.setOnClickListener {
             if (!isRecording) {
                 photoSaver.takePhoto(arFragment.arSceneView)
@@ -106,7 +111,7 @@ class MainActivity : AppCompatActivity() {
                      R.raw.tie_silencer -> Spaceship.TieSilencer
                      R.raw.xwing -> Spaceship.XWing
                      R.raw.jet -> Spaceship.Jet*/
-                    R.raw.beedrill->Spaceship.Halcon
+                    R.raw.beedrill->Spaceship.Bee
                     else -> Spaceship.Jet
                 }
                 addNodeToScene(anchor, modelRenderable, spaceship)
@@ -117,13 +122,7 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    private fun eliminateDot() {
-        arFragment.arSceneView.planeRenderer.isVisible = false
-        arFragment.planeDiscoveryController.hide()
-        arFragment.planeDiscoveryController.setInstructionView(null)
-    }
-
-    private fun addNodeToScene(
+      private fun addNodeToScene(
         anchor: Anchor,
         modelRenderable: ModelRenderable,
         spaceship: Spaceship
@@ -140,5 +139,11 @@ class MainActivity : AppCompatActivity() {
         }
         arFragment.arSceneView.scene.addChild(anchorNode)
         nodes.add(rotatingNode)
+    }
+
+    private fun eliminateDot() {
+        arFragment.arSceneView.planeRenderer.isVisible = false
+        arFragment.planeDiscoveryController.hide()
+        arFragment.planeDiscoveryController.setInstructionView(null)
     }
 }

@@ -41,9 +41,9 @@ class ImageFragment : ArFragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       planeDiscoveryController.setInstructionView(null)
+     /*  planeDiscoveryController.setInstructionView(null)
        planeDiscoveryController.hide()
-       arSceneView.planeRenderer.isEnabled = false
+       arSceneView.planeRenderer.isEnabled = false*/
     }
 
     private fun chooseNewImage() {
