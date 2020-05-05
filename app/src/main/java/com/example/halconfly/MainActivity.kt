@@ -7,6 +7,8 @@ import android.view.MotionEvent
 import android.widget.Toast
 import com.google.ar.core.Anchor
 import com.google.ar.core.AugmentedImage
+import com.google.ar.core.Frame
+import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Quaternion
@@ -21,16 +23,13 @@ class MainActivity : AppCompatActivity() {
     private val augmentedImageMap = HashMap<AugmentedImage, AugmentedImageNodes>()
 
 
-
-
     private val modelResourceIds = arrayOf(
-       /* R.raw.star_destroyer,
-        R.raw.tie_silencer,
-        R.raw.xwing
-        R.raw.jet*/
-        R.raw.beedrill
+        /* R.raw.star_destroyer,
+         R.raw.tie_silencer,
+         R.raw.xwing*/
+         R.raw.beedrill
+       //R.raw.my_image_database
     )
-
 
 
     private var curCameraPosition = Vector3.zero()
@@ -44,21 +43,21 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         arFragment = fragment as ArFragment
 
+
         arFragment.setOnTapArPlaneListener { hitResult, _, _ ->
-            val randomId = modelResourceIds.random()
-            loadModelAndAddToScene(hitResult.createAnchor(), randomId)
-        }
-        arFragment.arSceneView.scene.addOnUpdateListener {
-            updateNodes()
-        }
+           val randomId = modelResourceIds.random()
+          loadModelAndAddToScene(hitResult.createAnchor(), randomId)
+       }
+          arFragment.arSceneView.scene.addOnUpdateListener {
+             updateNodes()
+         }
 
-        photoSaver = PhotoSaver(this)
-        videoRecorder = VideoRecorder(this).apply {
-            sceneView = arFragment.arSceneView
-
-            setVideoQuality(CamcorderProfile.QUALITY_1080P, resources.configuration.orientation)
-        }
-        setupFab()
+         photoSaver = PhotoSaver(this)
+         videoRecorder = VideoRecorder(this).apply {
+             sceneView = arFragment.arSceneView
+             setVideoQuality(CamcorderProfile.QUALITY_1080P, resources.configuration.orientation)
+         }
+         setupFab()
     }
 
     private fun setupFab() {
@@ -88,10 +87,12 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
     private fun updateNodes() {
         curCameraPosition = arFragment.arSceneView.scene.camera.worldPosition
-        for(node in nodes) {
-            node.worldPosition = Vector3(curCameraPosition.x, node.worldPosition.y, curCameraPosition.z)
+        for (node in nodes) {
+            node.worldPosition =
+                Vector3(curCameraPosition.x, node.worldPosition.y, curCameraPosition.z)
         }
     }
 
@@ -100,11 +101,12 @@ class MainActivity : AppCompatActivity() {
             .setSource(this, modelResourceId)
             .build()
             .thenAccept { modelRenderable ->
-                val spaceship = when(modelResourceId) {
-                   /* R.raw.star_destroyer -> Spaceship.StarDestroyer
-                    R.raw.tie_silencer -> Spaceship.TieSilencer
-                    R.raw.xwing -> Spaceship.XWing
-                    R.raw.jet -> Spaceship.Jet*/
+                val spaceship = when (modelResourceId) {
+                    /* R.raw.star_destroyer -> Spaceship.StarDestroyer
+                     R.raw.tie_silencer -> Spaceship.TieSilencer
+                     R.raw.xwing -> Spaceship.XWing
+                     R.raw.jet -> Spaceship.Jet*/
+                    R.raw.beedrill->Spaceship.Halcon
                     else -> Spaceship.Jet
                 }
                 addNodeToScene(anchor, modelRenderable, spaceship)
@@ -114,13 +116,18 @@ class MainActivity : AppCompatActivity() {
                 null
             }
     }
-    private fun eliminateDot(){
+
+    private fun eliminateDot() {
         arFragment.arSceneView.planeRenderer.isVisible = false
         arFragment.planeDiscoveryController.hide()
         arFragment.planeDiscoveryController.setInstructionView(null)
     }
 
-    private fun addNodeToScene(anchor: Anchor, modelRenderable: ModelRenderable, spaceship: Spaceship) {
+    private fun addNodeToScene(
+        anchor: Anchor,
+        modelRenderable: ModelRenderable,
+        spaceship: Spaceship
+    ) {
         val anchorNode = AnchorNode(anchor)
         val rotatingNode = RotatingNode(spaceship.degreesPerSecond).apply {
             setParent(anchorNode)

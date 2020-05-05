@@ -7,6 +7,16 @@ sealed class Spaceship {
     abstract val height: Float
     abstract val rotationDegrees: Float
 
+    object Halcon : Spaceship() {
+        override val degreesPerSecond: Float
+            get() = 30f
+        override val radius: Float
+            get() = 2f
+        override val height: Float
+            get() = 0.4f
+        override val rotationDegrees: Float
+            get() = 180f
+    }
     object Jet : Spaceship() {
         override val degreesPerSecond: Float
             get() = 20f
@@ -17,7 +27,6 @@ sealed class Spaceship {
         override val rotationDegrees: Float
             get() = 180f
     }
-
     object StarDestroyer : Spaceship() {
         override val degreesPerSecond: Float
             get() = 20f
